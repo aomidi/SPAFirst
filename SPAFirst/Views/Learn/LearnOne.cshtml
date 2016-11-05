@@ -1,0 +1,129 @@
+﻿@{
+	ViewBag.Title = "LearnOne";
+}
+<div class="SurfsUp">
+	<h2 data-bind="text:say"></h2>
+</div>
+
+<script type="text/javascript">
+
+	var person = { firstName: "Alireza", lastName: "Omidi" };
+
+	var personViewModel = function (p) {
+		var self = this;
+
+		self.say = "Learning KnockoutJS...";
+		self.firstName = ko.observable(p.firstName);
+		self.lastName = ko.observable(p.lastName);
+
+		self.fullName = ko.computed(function () {
+			return self.firstName() + " " + self.lastName();
+		})
+
+		self.process = function () {
+			alert('Clicked');
+		}
+
+		function peopleName(name, family) {
+			this.name = ko.observable(name);
+			this.family = ko.observable(family);
+		};
+
+		self.peopleNameList = ko.observableArray([
+			new peopleName("Alireza", "Omidi"),
+			new peopleName("Avin", "Omidi"),
+			new peopleName("fahimeh", "Khani"),
+			new peopleName("Farnoush", "Khani")
+		]);
+
+		self.name = ko.observable('');
+		self.family = ko.observable('');
+
+		self.addPersonToList = function () {
+			self.peopleNameList.push(new peopleName(self.name(), self.family()));
+			self.name('');
+			self.family('');
+		};
+		self.removePerson = function (p) {
+			self.peopleNameList.remove(p);
+		};
+
+		self.IsValid = ko.computed(function () {
+			return self.name() != '' && self.family() != '';
+		});
+	}
+
+	$(function () {
+		ko.applyBindings(new personViewModel(person));
+
+	})
+
+</script>
+
+<div class="row">
+	<div class="col-md-10 col-md-push-1">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<span class="glyphicon glyphicon-info-sign"></span><span class="panel-title">This panel contains your information</span>
+			</div>
+			<div class="panel-body form-horizontal">
+				<div class="row form-group">
+					<label for="txtName" title="Name" class="col-sm-1 control-label">Name</label>
+					<div class="col-sm-9">
+						<input type="text" id="txtName" class="form-control" data-bind="textinput:name" />
+						<span data-bind="text:firstName" class="control-label"></span>
+					</div>
+				</div>
+				<div class="row form-group">
+					<label for="txtFamily" title="Family" class="col-sm-1 control-label">Family</label>
+					<div class="col-sm-9">
+						<input type="text" id="txtFamily" class="form-control" data-bind="textinput:family" />
+						<span data-bind="text: lastName"></span>
+					</div>
+				</div>
+				<div class="row form-group">
+					<div class="col-sm-9">
+						Full Name : <span data-bind="text: fullName"></span>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div class="row form-group">
+					<div class="col-sm-3">
+						<button type="button" class="btn btn-primary" accesskey="S" data-bind="enable:IsValid,click:addPersonToList">Submit</button>
+						<button type="reset" class="btn btn-default" accesskey="R">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<div class="row">
+		<div class="col-md-10 col-md-push-1">
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<span class="glyphicon glyphicon-apple">Foreach Sample</span>
+				</div>
+				<div class="panel-body">
+					<table class="table table-bordered table-condensed table-striped table-hover">
+						<thead>
+							<tr>
+								<td>Name</td>
+								<td>Family</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach:peopleNameList">
+							<tr>
+								<td><span data-bind="text:name"></span></td>
+								<td data-bind="text:family"></td>
+								<td><button type="button" id="btnRemove" class="btn btn-danger" data-bind="click:$root.removePerson">Remove</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	

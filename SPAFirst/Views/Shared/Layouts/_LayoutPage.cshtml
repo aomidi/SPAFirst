@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<title>@ViewBag.Title</title>
+	@Styles.Render("~/Content/css")
+	@Scripts.Render("~/bundles/jquery")
+	@Scripts.Render("~/bundles/bootstrap")
+	@Scripts.Render("~/bundles/knockout")
+	@Scripts.Render("~/bundles/linq")
+	@RenderSection("scripts", required: false)
+
+	@*@System.Web.Optimization.Scripts.Render("~/bundles/modernizr")*@
+
+</head>
+<body>
+ 
+@{ 
+	string strPeopleHeader = SPAFirst.Resources.Buttons.PeopleList;
+}	
+	<div class="container">
+		<div class="row">
+			@*<div class="page-header">
+					<h1 class="glyphicon glyphicon-apple">SPA Project</h1>
+				</div>*@
+			<nav class="navbar navbar-default navbar-fixed-top paneGlass" role="navigation">
+				<div class="collapse navbar-collapse paneGlass" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="paneGlass">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "navbar-brand " })</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle paneGlass" data-toggle="dropdown">Forms <b class="caret paneGlass"></b></a>
+							<ul class="dropdown-menu paneGlass">
+								<li>@Html.ActionLink("Learn One", MVC.Learn.LearnOne(), htmlAttributes: new { @class = "paneGlass" }) </li>
+								<li>@Html.ActionLink("Learn Two", MVC.Learn.LearnTwo(), htmlAttributes: new { @class = "paneGlass" })</li>
+								<li>@Html.ActionLink("Learn Three", MVC.Learn.LearnThree(), htmlAttributes: new { @class = "paneGlass" })</li>
+								<li>@Html.ActionLink("Learn Four", MVC.Learn.LearnFour(), htmlAttributes: new { @class = "paneGlass" }) </li>
+								<li>@Html.ActionLink("Learn Five", MVC.Learn.LearnFive(), htmlAttributes: new { @class = "paneGlass" }) </li>
+								<li class="divider paneGlass"></li>
+								<li><a href="#">Sample Two</a></li>
+								<li class="divider paneGlass"></li>
+								<li><a href="#">One more separated link</a></li>
+							</ul>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle paneGlass" data-toggle="dropdown">@strPeopleHeader<b class="caret paneGlass"></b></a>
+							<ul class="dropdown-menu paneGlass">
+								<li>@Html.ActionLink(SPAFirst.Resources.Buttons.People,MVC.People.Index(), htmlAttributes: new { @class = "paneGlass" })</li>
+							</ul>
+						</li>
+						@*<li class="paneGlass">@Html.ActionLink("First Learn Page","Index","Learn",null,new { @class = "" })</li>*@
+					</ul>
+					<ul class="nav navbar-nav navbar-right paneGlass">
+						<li>@*@Html.ActionLink("About", MVC.Home.About(), htmlAttributes: new { @class = "" })*@</li>
+					<li>@Html.ActionLink(SPAFirst.Resources.Buttons.About,MVC.Home.About(), htmlAttributes: new { @class = "" })</li>
+					</ul>
+				</div>
+
+			</nav>
+		</div>
+	</div>
+	<div class="container" style="margin-top:100px">
+		<div class="row paneGlass">
+
+			@RenderBody()
+		</div>
+	</div>
+
+</body>
+</html>

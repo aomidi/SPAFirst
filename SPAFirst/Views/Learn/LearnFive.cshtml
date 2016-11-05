@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "LearnFive";
+}
+
+<h2>LearnFive</h2>
+
+<script>
+	$(function () {
+
+		$('#btnCompute').click(function () {
+			
+			var $button = $(this);
+
+			var worker = new Worker("LTP.js");
+
+			worker.onmessage = function (e) {
+				$('#result').text(e.data.result);
+
+				$button.text('Compute');
+				$button.removeAttr('disabled');
+			}
+
+			worker.onerror = function (e) {
+
+				alert(e.message);
+				$button.text('Compute');
+				$button.removeAttr('disabled');
+			}
+
+			var message = { number: 100000000 };
+
+			$button.text('Processing...');
+			$button.attr('disabled', 'disabled');
+
+			$('#result').text('');
+			worker.postMessage(message);
+		});
+
+		$('#btnJob').click(function () {
+			$('#jobresult').text('Is Done');
+		});
+	})
+</script>
+<div style="height:590px;">
+	<div class="SurfsUp">
+		<button type="button" id="btnCompute" class="btn btn-primary" style="width:90px;">Compute</button>
+		<span id="result"></span>
+	</div>
+	<div class="SurfsUp">
+		<button type="button" id="btnJob" class="btn btn-warning" style="width:90px;">Job</button>
+		<span id="jobresult"></span>
+	</div>
+</div>

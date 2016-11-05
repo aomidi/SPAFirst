@@ -1,0 +1,330 @@
+﻿
+@{
+    ViewBag.Title = "LearnThree";
+}
+
+<h2>LearnThree</h2>
+<link href="~/Content/Site.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-2.2.3.js"></script>
+<script src="~/Scripts/bootstrap.js"></script>
+<script src="~/Scripts/knockout-3.4.0.js"></script>
+<script>
+	var profileViewModel = function (profile) {
+		var self = this;
+
+		self.id = ko.observable(profile.id);
+		self.fullName = ko.observable(profile.fullName);
+		self.birthDate = ko.observable(profile.birthDate);
+		self.email = ko.observable(profile.email);
+		self.mobile = ko.observable(profile.mobile);
+	}
+
+	var profileManagerViewModel = function () {
+		var self = this;
+
+		//self.profiles = ko.observableArray([
+		//    { fullName: 'f1', birthDate: 'b1', email: 'e1', mobile: 'm1' },
+		//    { fullName: 'f2', birthDate: 'b1', email: 'e1', mobile: 'm1' },
+		//]);
+		//self.profiles = ko.observableArray([
+		//    new profileViewModel({id: 1, fullName: 'f1', birthDate: 'b1', email: 'e1', mobile: 'm1' }),
+		//    new profileViewModel({id: 2, fullName: 'f2', birthDate: 'b2', email: 'e2', mobile: 'm2' }),
+		//]);
+		self.profiles = ko.observableArray([]);
+		self.selectedId = ko.observable();
+
+		function compare(a, b) {
+			if (a.id() < b.id()) {
+				return 1;
+			}
+			else if (a.id() > b.id()) {
+				return -1;
+			}
+			else {
+				return 0;
+			}
+		}
+
+		self.sortedProfiles = ko.computed(function () {
+			return self.profiles().sort(compare);
+		});
+
+		var id = 0;
+		var currentAction = '';
+
+		self.currentProfile = new profileViewModel({});
+
+		function clearProfile() {
+			self.currentProfile.fullName('');
+			self.currentProfile.birthDate('');
+			self.currentProfile.email('');
+			self.currentProfile.mobile('');
+		}
+
+		self.add = function () {
+			//alert('A');
+
+			currentAction = 'add';
+
+			clearProfile();
+
+			self.modalTitle('Add New Profile');
+			self.modalExeText('Add Record');
+			self.modalExeIcon('glyphicon glyphicon-plus');
+			//$('#' + self.modalId()).modal('show');
+			//$('#' + self.modalId()).modal({
+			//    show: true,
+			//    backdrop: 'static'
+			//});
+			self.modalShow(true);
+		}
+		self.edit = function () {
+			//alert('E');
+			currentAction = 'edit';
+
+			var result = self.profiles().filter(function (profile) {
+				return profile.id() == self.selectedId();
+			})[0]
+
+			self.currentProfile.fullName(result.fullName());
+			self.currentProfile.birthDate(result.birthDate());
+			self.currentProfile.email(result.email());
+			self.currentProfile.mobile(result.mobile());
+
+			self.modalTitle('Edit Profile');
+			self.modalExeText('Update Record');
+			self.modalExeIcon('glyphicon glyphicon-floppy-save');
+			self.modalShow(true);
+		}
+		self.remove = function () {
+			var result = self.profiles().filter(function (profile) {
+				return profile.id() == self.selectedId();
+			})[0];
+
+			self.profiles.remove(result);
+		}
+
+		//Define Modal Parameters
+
+		self.modalShow = ko.observable(false);
+		self.modalShow.subscribe(function (value) {
+			if (value) {
+				$('#' + self.modalId()).modal({
+					show: true,
+					backdrop: 'static'
+				});
+			}
+			else {
+				$('#' + self.modalId()).modal('hide');
+			}
+		});
+		self.modalId = ko.observable('myModal');
+		self.modalTitle = ko.observable('');
+		self.modalClose = function () {
+			//$('#' + self.modalId()).modal('hide');
+			self.modalShow(false);
+		}
+		self.modalExecute = function () {
+			switch (currentAction) {
+				case 'add':
+					var profile = {
+						id: ++id,
+						fullName: self.currentProfile.fullName(),
+						birthDate: self.currentProfile.birthDate(),
+						email: self.currentProfile.email(),
+						mobile: self.currentProfile.mobile(),
+					};
+					self.profiles.push(new profileViewModel(profile));
+					self.modalShow(false);
+					break;
+				case 'edit':
+					var result = self.profiles().filter(function (profile) {
+						return profile.id() == self.selectedId();
+					})[0]
+					result.fullName(self.currentProfile.fullName());
+					result.birthDate(self.currentProfile.birthDate());
+					result.email(self.currentProfile.email());
+					result.mobile(self.currentProfile.mobile());
+					self.modalShow(false);
+					break;
+			}
+		}
+		self.modalExeText = ko.observable('');
+		self.modalExeIcon = ko.observable('');
+
+		self.isValid = ko.computed(function () {
+			var result = true;
+
+			if (self.currentProfile.fullName() == '') {
+				$('#fullNameVal').addClass('has-error').removeClass('has-success');
+				result = false;
+			}
+			else {
+				$('#fullNameVal').addClass('has-success').removeClass('has-error');
+			}
+			if (self.currentProfile.birthDate() == '') {
+				$('#birthDateVal').addClass('has-error').removeClass('has-success');
+				result = false;
+			}
+			else {
+				$('#birthDateVal').addClass('has-success').removeClass('has-error');
+			}
+			if (self.currentProfile.email() == '') {
+				$('#emailVal').addClass('has-error').removeClass('has-success');
+				result = false;
+			}
+			else {
+				$('#emailVal').addClass('has-success').removeClass('has-error');
+			}
+			if (self.currentProfile.mobile() == '') {
+				$('#mobileVal').addClass('has-warning').removeClass('has-success');
+			}
+			else {
+				$('#mobileVal').addClass('has-success').removeClass('has-warning');
+			}
+			return result;
+		});
+	}
+
+	$(function () {
+
+		$('[data-toggle="tooltip"]').tooltip();
+
+		ko.applyBindings(new profileManagerViewModel());
+
+	});
+</script>
+<div class="page-header">
+	<h1>Profile Management</h1>
+</div>
+<div class="panel-body">
+	<button type="button" id="btnShow" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Show</button>
+</div>
+
+<div class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand">Sematec</a>
+		</div>
+		<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="#" data-bind="click: add">Add</a>
+				</li>
+				<li>
+					<a href="#" data-bind="click: edit">Edit</a>
+				</li>
+				<li>
+					<a href="#" data-bind="click: remove">Delete</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Person Profile</h3>
+		<a href="#">Record Numbers <span class="badge" data-bind="text: profiles().length"></span> </a>
+	</div>
+	<div class="panel-body">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr class="success">
+					<th>
+					</th>
+					<th>
+						Full Name
+					</th>
+					<th>
+						Birth Date
+					</th>
+					<th>
+						Email
+					</th>
+					<th>
+						Mobile
+					</th>
+				</tr>
+			</thead>
+			<tbody data-bind="foreach: sortedProfiles">
+				<tr>
+					<td>
+						<input type="radio" name="selectedId" data-bind="checkedValue: $data.id, checked: $root.selectedId" />
+					</td>
+					<td data-bind="text: $data.fullName"></td>
+					<td data-bind="text: $data.birthDate"></td>
+					<td data-bind="text: $data.email"></td>
+					<td data-bind="text: $data.mobile"></td>
+				</tr>
+			</tbody>
+			<tfoot style="display: none;">
+				<tr>
+					<td colspan="3">
+						<ul class="pagination pagination-sm pull-right">
+							<li>
+								<a href="#" aria-label="Previous">
+									<span aria-hidden="true">&laquo;</span>
+								</a>
+							</li>
+							<li><a href="#">1</a></li>
+							<li><a href="#">2</a></li>
+							<li><a href="#">3</a></li>
+							<li><a href="#">4</a></li>
+							<li><a href="#">5</a></li>
+							<li>
+								<a href="#" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+
+<div class="modal fade" id="myModal" data-bind="attr:{id : modalId}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-bind="click: modalClose"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" data-bind="text: modalTitle"></h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-danger" data-bind="visible: !isValid()">
+					<strong>Error!</strong>please complete all required fields ...
+				</div>
+				<div>
+					<div class="form-group" id="fullNameVal">
+						<label class="control-label">Full Name</label>
+						<input type="text" class="form-control" data-bind="textInput: currentProfile.fullName" data-toggle="tooltip" data-placement="top" title="FullName is required" />
+					</div>
+					<div class="form-group" id="birthDateVal">
+						<label class="control-label">Birth Date</label>
+						<input type="text" class="form-control" data-bind="textInput: currentProfile.birthDate" data-toggle="tooltip" data-placement="top" title="BirthDate is required" />
+					</div>
+					<div class="form-group" id="emailVal">
+						<label class="control-label">Email</label>
+						<input type="text" class="form-control" data-bind="textInput: currentProfile.email" data-toggle="tooltip" data-placement="top" title="Email is required" />
+					</div>
+					<div class="form-group" id="mobileVal">
+						<label class="control-label">Mobile</label>
+						<input type="text" class="form-control" data-bind="textInput: currentProfile.mobile" data-toggle="tooltip" data-placement="top" title="Mobile is optional" />
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-bind="click: modalClose">
+					<span class="glyphicon glyphicon-remove"></span>
+					Close
+				</button>
+				<button type="button" class="btn btn-primary" data-bind="click: modalExecute, enable: isValid">
+					<span data-bind="css: modalExeIcon"></span>
+					<span data-bind="text: modalExeText"></span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,89 @@
+﻿@{
+	ViewBag.Title = "LearnFour";
+}
+<h2>LearnFour</h2>
+
+<script id="LTP" type="javascript/worker">
+	function Compute(number) {
+		var sum = 0;
+
+		while (number != 0) {
+			sum += number % 10;
+
+			number = Math.floor(number / 10);
+
+			if (number < 10) {
+				sum += number;
+				number = 0;
+			}
+		}
+
+		return sum;
+	}
+
+	function LTP(number) {
+		var total = 0;
+
+		for (var i = 0; i < number; i++) {
+			total += Compute(i);
+		}
+
+		return total;
+	}
+
+	self.onmessage = function (e) {
+		var number = e.data.number;
+
+		var result = LTP(number);
+
+		var message = { result: result };
+		postMessage(message);
+	}
+</script>
+
+
+<script type="text/javascript">
+
+	$(function () {
+
+		$('#btnCompute').click(function () {
+
+			var $button = $(this);
+			var blob = new Blob([document.querySelector("#LTP").textContent], { type: "text/javascript" });
+			var vURL = URL.createObjectURL(blob);
+
+			var worker = new Worker(vURL);
+
+			worker.onmessage = function (e) {
+				$('#result').text(e.data.result);
+
+				$button.text('Compute');
+				$button.removeAttr('disabled');
+			}
+
+			worker.onerror = function (e) {
+				alert(e.message);
+				$button.text('Compute');
+				$button.removeAttr('disabled');
+			}
+
+			var message = { number: 100000000 };
+
+			$button.text('Processing...');
+			$button.attr('disabled', 'disabled');
+			$('#result').text('');
+			worker.postMessage(message);
+		});
+	});
+
+</script>
+
+<div style="height:590px;">
+	<div class="SurfsUp">
+		<button type="button" id="btnCompute" class="btn btn-primary" style="width:90px;">Compute</button>
+		<span id="result"></span>
+	</div>
+	<div class="SurfsUp">
+		<button type="button" id="btnJob" class="btn btn-warning" style="width:90px;">Job</button>
+	</div>
+</div>

@@ -1,0 +1,56 @@
+﻿@model SPAFirst.Models.Person
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>@SPAFirst.Resources.Buttons.Delete</h2>
+
+<h3>@SPAFirst.Resources.Messages.DeleteMessage</h3>
+<div>
+    <h4>@SPAFirst.Resources.Messages.Person</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsActive)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsActive)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="@SPAFirst.Resources.Buttons.Delete" class="btn btn-danger" /> |
+            @Html.ActionLink(SPAFirst.Resources.Buttons.Back, MVC.People.Index(),htmlAttributes:new { @class="btn btn-default"})
+        </div>
+    }
+</div>
